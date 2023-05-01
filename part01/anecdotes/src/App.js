@@ -52,19 +52,9 @@ const App = () => {
     votesCopy[selected] += 1
     setVotes(votesCopy)
 
-    // Look for the most-voted anecdote
-    let newMostVotedId;
-    let maxVotes = 0;
-    for (let i=0; i < anecdotes.length; i++) {
-      if (votesCopy[i] > maxVotes){
-        newMostVotedId = i;
-        maxVotes = votesCopy[i]
-      }
-    }
-    
-    if (newMostVotedId !== mostVotedId) {
-      console.log("setting")
-      setMostVoted(newMostVotedId)
+    // If it's the new most voted, set it as most voted
+    if (votesCopy[selected] > Math.max(...votes)) {
+      setMostVoted(selected)
     }
   }
 
@@ -81,7 +71,6 @@ const App = () => {
 
       <br/>
       <MostVoted anecdotes={anecdotes} mostVotedId={mostVotedId}/>
-      
     </div>
   )
 }
