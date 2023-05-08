@@ -1,9 +1,10 @@
+
 import { useEffect, useState } from 'react'
-import axios from 'axios'
 
 import Form from './Form'
 import Filter from './Filter'
 import Persons from './Persons'
+import personService from './services/PersonsService'
 
 
 const App = () => {
@@ -14,10 +15,10 @@ const App = () => {
 
   // Load data from json "db"
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
+    personService
+      .getAll()
       .then(response => {
-        setPersons(response.data)
+        setPersons(response)
       })
   }, [])
 
@@ -31,9 +32,8 @@ const App = () => {
             newName={newName} setNewName={setNewName}
             newNumber={newNumber} setNewNumber={setNewNumber}/>
 
-
       <h2>Numbers</h2>
-      <Persons persons={persons} filter={filter}/>
+      <Persons persons={persons} setPersons={setPersons} filter={filter}/>
     </div>
   )
 }

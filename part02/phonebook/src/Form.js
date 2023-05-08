@@ -1,4 +1,7 @@
 
+import personService from './services/PersonsService'
+
+
 const Form = (props) => {
 
   const {persons, setPersons, newName,
@@ -11,16 +14,29 @@ const Form = (props) => {
       name: newName.trim(),
       number: newNumber.trim()
     }
-    if (persons.find(p => p.name === newPerson.name)) {
-      alert(`${newPerson.name} is already added to phonebook`)
+    
+    // Check if person already exists
+    const personFound = persons.find(p => p.name === newPerson.name)
+    if (personFound) {
+      if (window.confirm(`${personFound.name} is already added to phonebook. Replace the old number with a new one?`)) {
+        const changedPerson = {...personFound, number: newPerson.number}
+        personService
+          .modify(changedPerson.id, changedPerson)
+          .then(setPersons(persons.map(p => p.id === changedPerson.id ? changedPerson : p)))
+      }
       setNewName('')
       setNewNumber('')
       return
     }
     
-    setPersons(persons.concat(newPerson))
-    setNewName('')
-    setNewNumber('')
+    // Create new person if it didn't exist
+    personService
+      .create(newPerson)
+      .then(response => {
+        setPersons(persons.concat(response))
+        setNewName('')
+        setNewNumber('')
+      })
   }
 
   return (
