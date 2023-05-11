@@ -4,8 +4,15 @@ import personService from './services/PersonsService'
 
 const Form = (props) => {
 
-  const {persons, setPersons, newName,
-          setNewName, newNumber, setNewNumber} = props
+  const { persons, setPersons, newName,
+          setNewName, newNumber, setNewNumber, 
+          setNotification, setNotificationClass } = props
+
+  const notify = (message, style) => {
+    setNotification(message)
+    setNotificationClass(style)
+    setTimeout(() => setNotification(null), 3000)
+  }
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -23,6 +30,10 @@ const Form = (props) => {
         personService
           .modify(changedPerson.id, changedPerson)
           .then(setPersons(persons.map(p => p.id === changedPerson.id ? changedPerson : p)))
+          .catch(error => {
+            notify(`Information of ${newPerson.name} has already been removed from the server`, 'error')
+            setPersons(persons.filter(p => p.name !== changedPerson.name)) 
+          })
       }
       setNewName('')
       setNewNumber('')
@@ -34,6 +45,7 @@ const Form = (props) => {
       .create(newPerson)
       .then(response => {
         setPersons(persons.concat(response))
+        notify(`Added ${newPerson.name}`, 'success')
         setNewName('')
         setNewNumber('')
       })
