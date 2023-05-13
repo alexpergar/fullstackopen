@@ -10,27 +10,31 @@ const App = () => {
   const [countryName, setCountryName] = useState('')
   const [foundCountries, setFoundCountries] = useState([])
 
-  // Fetch all countries data to memory
+  // Fetch all countries' data to memory at start
   useEffect(() => {
     axios
       .get('https://restcountries.com/v3.1/all')
-      .then(response => setEveryCountry(Object.entries(response.data)))
+      .then(response => {
+        const countryArray = Object.entries(response.data).map(country => country[1])
+        setEveryCountry(countryArray)
+        setFoundCountries(countryArray)
+      })
   }, [])
 
-  // Update found contries when loading the database or when user input
+  // Update found contries when user inputs text
   useEffect(() => {
     setFoundCountries(everyCountry
-      .filter(country =>  country[1].name.common.toUpperCase().indexOf(countryName.toUpperCase()) !== -1)
-      .map( country => country[1])
+      .filter(country =>  country.name.common.toUpperCase().indexOf(countryName.toUpperCase()) !== -1)
     )
-  }, [countryName, everyCountry])
+  }, [countryName])
 
+  
   return (
     <div>
       <div>
-        find countries <input value={countryName} onChange={(event) => setCountryName(event.target.value)}/>
+        Find countries: <input value={countryName} onChange={(event) => setCountryName(event.target.value)}/>
       </div>
-      <Countries foundCountries={foundCountries}/>
+      <Countries foundCountries={foundCountries} setFoundCountries={setFoundCountries}/>
     </div>
   )
 }
