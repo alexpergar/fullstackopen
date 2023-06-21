@@ -111,7 +111,6 @@ describe('tests for 4.b', () => {
   })
 
   test('post request works', async () => {
-
     const getResponseBefore = await api.get('/api/blogs')
 
     const newBlog = {
@@ -140,7 +139,42 @@ describe('tests for 4.b', () => {
     // Cleaning.
     const blogs = await Blog.find({})
     await blogs[blogs.length-1].deleteOne()
+  })
 
+  test('no likes in post initializes likes to 0', async () => {
+    const newBlog = {
+      'title': 'test',
+      'author': 'test',
+      'url': 'test',
+    }
+
+    const postResponse = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    // Check if the last element is the one we added.
+    expect(postResponse.body.likes)
+    .toBe(0)
+
+    // Cleaning.
+    const blogs = await Blog.find({})
+    await blogs[blogs.length-1].deleteOne()
+
+  })
+
+  test('no url or title returns 400 bad request', async () => {
+    let newBlog = {
+      'author': 'test',
+      'url': 'test',
+      'likes': 1,
+    }
+
+    const postResponse = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
   })
 })
 
