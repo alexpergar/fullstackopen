@@ -56,6 +56,14 @@ const blogs = [
   }  
 ]
 
+beforeEach(async () => {
+  await Blog.deleteMany({})
+
+  const blogObjects = blogs.map(blog => new Blog(blog))
+  const promiseArray = blogObjects.map(blog => blog.save())
+  await Promise.all(promiseArray)
+})
+
 test('dummy returns one', () => {
   const blogs = []
 
@@ -168,13 +176,47 @@ describe('tests for 4.b', () => {
     let newBlog = {
       'author': 'test',
       'url': 'test',
-      'likes': 1,
+      'likes': 5,
     }
-
-    const postResponse = await api
+    await api
       .post('/api/blogs')
       .send(newBlog)
       .expect(400)
+
+    newBlog = {
+      'title': 'test',
+      'author': 'test',
+      'likes': 5,
+    }
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+
+  })
+
+  test('delete request is working', async () => {
+    const getResponse = await api.get('/api/blogs')
+    const targetId = getResponse.body[0].id
+
+    await api
+      .delete(`/api/blogs/${targetId}`)
+      .expect(204)
+  })
+
+  test('put request is working', async () => {
+    const getResponse = await api.get('/api/blogs')
+    const targetBlog = getResponse.body[0]
+
+    const modifiedBlog = {
+      ...targetBlog,
+      likes: 9999,
+    }
+
+    await api
+      .put(`/api/blogs/${targetBlog.id}`)
+      .send(modifiedBlog)
+      .expect(200)
   })
 })
 
