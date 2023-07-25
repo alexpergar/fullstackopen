@@ -3,6 +3,7 @@ const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const listHelper = require('../utils/list_helper')
 
 const blogs = [
@@ -56,12 +57,34 @@ const blogs = [
   }  
 ]
 
-beforeEach(async () => {
+const users = [
+  {
+    _id: "5a422b891b54a676234d17fa",
+    name: "User 1",
+    username: "user-name-1",
+    passwordHash: "asdfgg9348th9823hgifuyg87r32h9824yfb",
+    __v: 0
+  },
+  {
+    _id: "5a422bc61b54a676234d17fb",
+    name: "User 2",
+    username: "user-name-2",
+    passwordHash: "asdfgg934dfhsdhjfgsdhsdfsgdrsg824yfb",
+    __v: 0
+  }  
+]
+
+beforeAll(async () => {
   await Blog.deleteMany({})
+  await User.deleteMany({})
 
   const blogObjects = blogs.map(blog => new Blog(blog))
-  const promiseArray = blogObjects.map(blog => blog.save())
-  await Promise.all(promiseArray)
+  const promiseArrayBlogs = blogObjects.map(blog => blog.save())
+  await Promise.all(promiseArrayBlogs)
+
+  const userObjects = users.map(user => new User(user))
+  const promiseArrayUsers = userObjects.map(user => user.save())
+  await Promise.all(promiseArrayUsers)
 })
 
 test('dummy returns one', () => {
@@ -217,6 +240,48 @@ describe('tests for 4.b', () => {
       .put(`/api/blogs/${targetBlog.id}`)
       .send(modifiedBlog)
       .expect(200)
+  })
+})
+
+describe('tests for 4.d', () => {
+  test('invalid user creation: invalid password', async () => {
+    const user = {
+      'name': 'test user',
+      'username': 'test_user',
+      'password': 'ab'
+    }
+    await api
+      .post('/api/users')
+      .send(user)
+      .expect(400)
+  })
+
+  test('invalid user creation: invalid username', async () => {
+    const user = {
+      'name': 'test user',
+      'username': 'tu',
+      'password': 'fmfiuaua39fASnw3ofiNFDsd93'
+    }
+    await api
+      .post('/api/users')
+      .send(user)
+      .expect(400)
+  })
+
+  test('invalid user creation: username is not unique', async () => {
+    const user = {
+      'name': 'test user',
+      'username': 'user123',
+      'password': 'fmfiuaua39fASnw3ofiNFDsd93'
+    }
+    await api
+      .post('/api/users')
+      .send(user)
+      .expect(201)
+    await api
+      .post('/api/users')
+      .send(user)
+      .expect(400)
   })
 })
 
