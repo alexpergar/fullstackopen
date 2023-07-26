@@ -32,7 +32,23 @@ router.post('/', async (request, response, next) => {
 })
 
 router.delete('/:id', async (request, response, next) => {
-  await Blog.findByIdAndRemove(request.params.id)
+  // Verify token and get user
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: 'token invalid' })
+  }
+  const user = await User.findById(decodedToken.id)
+  if (!user) {
+    return response.status(400).json({ error: 'user not found' })
+  }
+
+  // Find blog and verify ownership
+  const blog = await Blog.findById(request.params.id)
+  if (blog.user.toString() !== user._id.toString()) {
+    return response.status(401).json({error: 'can only remove blogs you own' })
+  }
+  // await Blog.findByIdAndRemove(request.params.id)
+  await blog.deleteOne()
   response.status(204).end()
 })
 
