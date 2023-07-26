@@ -1,27 +1,18 @@
 const router = require('express').Router()
+const middleware = require('../utils/middleware')
 const Blog = require('../models/blog')
 const User = require('../models/user')
-const jwt = require('jsonwebtoken')
 
 router.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user')
   response.json(blogs)
 })
 
-router.post('/', async (request, response, next) => {
-  // Verify token and get user
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: 'token invalid' })
-  }
-  const user = await User.findById(decodedToken.id)
-
-  if (!user) {
-    return response.status(400).json({ error: 'user not found' })
-  }
-
+router.post('/', middleware.userExtractor, async (request, response, next) => {
+  const user = request.user
+  
   // Save the blog
-  let blog = new Blog({...request.body, 'user': user._id})
+  let blog = new Blog({...request.body, 'user': request.user._id})
   const savedBlog = await blog.save()
 
   // Save the note ID in the user
@@ -31,16 +22,8 @@ router.post('/', async (request, response, next) => {
   response.status(201).json(savedBlog)
 })
 
-router.delete('/:id', async (request, response, next) => {
-  // Verify token and get user
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: 'token invalid' })
-  }
-  const user = await User.findById(decodedToken.id)
-  if (!user) {
-    return response.status(400).json({ error: 'user not found' })
-  }
+router.delete('/:id', middleware.userExtractor, async (request, response, next) => {
+  const user = request.user
 
   // Find blog and verify ownership
   const blog = await Blog.findById(request.params.id)
