@@ -129,6 +129,20 @@ describe('most likes', () => {
 })
 
 describe('tests for 4.b', () => {
+
+  // Necessary for autentification
+  test('a user is correctly created', async () => {
+    const user = {
+      'name': 'test user',
+      'username': 'my-users',
+      'password': '123abc'
+    }
+    await api
+      .post('/api/users')
+      .send(user)
+      .expect(201)
+  })
+
   test('supertest is making a get request correctly', async () => {
     await api
       .get('/api/blogs')
@@ -144,15 +158,26 @@ describe('tests for 4.b', () => {
   test('post request works', async () => {
     const getResponseBefore = await api.get('/api/blogs')
 
+    // Login
+    const user = {
+      "username": "my-users",
+      "password": "123abc"
+    }
+    const loginResponse = await api
+      .post('/api/login')
+      .send(user)
+    const token = loginResponse.body.token
+
+    // Create blog
     const newBlog = {
       'title': 'test',
       'author': 'test',
       'url': 'test',
       'likes': 5,
     }
-
     const postResponse = await api
       .post('/api/blogs')
+      .set('Authorization', 'Bearer ' + token)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -164,8 +189,8 @@ describe('tests for 4.b', () => {
       .toEqual(getResponseBefore.body.length + 1)
 
     // Check if the last element is the one we added.
-    expect(postResponse.body)
-    .toEqual(getResponseAfter.body[getResponseAfter.body.length-1])
+    expect(postResponse.body.id)
+    .toEqual(getResponseAfter.body[getResponseAfter.body.length-1].id)
 
     // Cleaning.
     const blogs = await Blog.find({})
@@ -173,14 +198,25 @@ describe('tests for 4.b', () => {
   })
 
   test('no likes in post initializes likes to 0', async () => {
+    // Login
+    const user = {
+      "username": "my-users",
+      "password": "123abc"
+    }
+    const loginResponse = await api
+      .post('/api/login')
+      .send(user)
+    const token = loginResponse.body.token
+
+    // Create blog
     const newBlog = {
       'title': 'test',
       'author': 'test',
       'url': 'test',
     }
-
     const postResponse = await api
       .post('/api/blogs')
+      .set('Authorization', 'Bearer ' + token)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -222,8 +258,33 @@ describe('tests for 4.b', () => {
     const getResponse = await api.get('/api/blogs')
     const targetId = getResponse.body[0].id
 
+    // Login
+    const user = {
+      "username": "my-users",
+      "password": "123abc"
+    }
+    const loginResponse = await api
+      .post('/api/login')
+      .send(user)
+    const token = loginResponse.body.token
+
+    // Create new blog
+    const newBlog = {
+      'title': 'test',
+      'author': 'test',
+      'url': 'test',
+      'likes': 5,
+    }
+    const postResponse = await api
+      .post('/api/blogs')
+      .set('Authorization', 'Bearer ' + token)
+      .send(newBlog)
+      .expect('Content-Type', /application\/json/)
+
+    // Delete the new blog
     await api
-      .delete(`/api/blogs/${targetId}`)
+      .delete(`/api/blogs/${postResponse.body.id}`)
+      .set('Authorization', 'Bearer ' + token)
       .expect(204)
   })
 
