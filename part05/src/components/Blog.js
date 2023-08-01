@@ -1,7 +1,8 @@
 import { useState } from 'react'
+import blogService from '../services/blogs'
 import '../styles/index.css'
 
-const Blog = ({blog}) => {
+const Blog = ({blog, blogs, setBlogs, notify}) => {
 
   const [visible, setVisible] = useState(false)
 
@@ -19,6 +20,15 @@ const Blog = ({blog}) => {
     addedby = 'Unknown'
   }
 
+  const likeBlog = async () => {
+    try {
+      const likedBlog = await blogService.likeBlog(blog)
+      setBlogs(blogs.map(b => b.id === blog.id ? likedBlog : b))
+    } catch(exception) {
+      notify(exception.response.data.error, 'error')
+    }
+  }
+
   return (
     <div className='blog'>
       <span>{blog.title} - {blog.author}</span>
@@ -28,7 +38,7 @@ const Blog = ({blog}) => {
       <div style={showWhenVisible}>
         <button onClick={toggleVisibility}>hide</button>
         <p>{blog.url}</p>
-        <p>{blog.likes}<button>like</button></p>
+        <p>{blog.likes}<button onClick={likeBlog}>like</button></p>
         <p>{addedby}</p>
       </div>
     </div>  

@@ -22,6 +22,20 @@ router.post('/', middleware.userExtractor, async (request, response, next) => {
   response.status(201).json(savedBlog)
 })
 
+router.put('/:id', middleware.userExtractor, async(request, response, next) => {
+  const user = request.user
+
+  // Find blog and verify ownership
+  const blog = await Blog.findById(request.params.id)
+  if (blog.user.toString() !== user._id.toString()) {
+    return response.status(401).json({error: 'can only modify blogs you own' })
+  }
+  
+  const putBlog = await Blog.findByIdAndUpdate(request.params.id, request.body,
+    { new: true, runValidators: true, context:'query' })
+  response.status(200).json(putBlog)
+})
+
 router.delete('/:id', middleware.userExtractor, async (request, response, next) => {
   const user = request.user
 
@@ -30,18 +44,9 @@ router.delete('/:id', middleware.userExtractor, async (request, response, next) 
   if (blog.user.toString() !== user._id.toString()) {
     return response.status(401).json({error: 'can only remove blogs you own' })
   }
-  // await Blog.findByIdAndRemove(request.params.id)
+
   await blog.deleteOne()
   response.status(204).end()
-})
-
-router.put('/:id', async (request, response, next) => {
-  const result = await Blog.findByIdAndUpdate(
-    request.params.id,
-    request.body,
-    { new: true, runValidators: true, context:'query' })
-    
-  response.json(result)
 })
 
 module.exports = router
