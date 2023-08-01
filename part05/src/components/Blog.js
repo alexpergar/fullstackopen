@@ -23,8 +23,25 @@ const Blog = ({blog, blogs, setBlogs, notify}) => {
   const likeBlog = async () => {
     try {
       const likedBlog = await blogService.likeBlog(blog)
-      setBlogs(blogs.map(b => b.id === blog.id ? likedBlog : b))
+      let modBlogs = blogs.map(b => b.id === blog.id ? likedBlog : b)
+      modBlogs.sort((a, b) => {
+        if (a.likes > b.likes) return -1
+        else return 1
+      })
+      setBlogs(modBlogs)
     } catch(exception) {
+      notify(exception.response.data.error, 'error')
+    }
+  }
+
+  const deleteBlog = async () => {
+    if (!window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)){
+      return
+    }
+    try {
+      blogService.deleteBlog(blog)
+      setBlogs(blogs.filter(b => b.id !== blog.id))
+    } catch (exception) {
       notify(exception.response.data.error, 'error')
     }
   }
@@ -40,6 +57,7 @@ const Blog = ({blog, blogs, setBlogs, notify}) => {
         <p>{blog.url}</p>
         <p>{blog.likes}<button onClick={likeBlog}>like</button></p>
         <p>{addedby}</p>
+        <button onClick={deleteBlog}>remove</button>
       </div>
     </div>  
   )

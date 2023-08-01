@@ -32,10 +32,20 @@ const likeBlog = async (blog) => {
   return response.data
 }
 
+const deleteBlog = async (blog) => {
+  const url = `${baseUrl}/${blog.id}`
+  const config = {
+    headers: { Authorization: token }
+  }
+
+  await axios.delete(url, config)
+}
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default { 
   getAll,
   createBlog,
   likeBlog,
-  setToken
+  setToken,
+  deleteBlog
 }
