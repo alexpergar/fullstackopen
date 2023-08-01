@@ -12,9 +12,16 @@ const Blog = ({blog}) => {
     setVisible(!visible)
   }
 
+  let addedby = ''
+  if (blog.user) {
+    addedby = blog.user.name
+  } else {
+    addedby = 'Unknown'
+  }
+
   return (
     <div className='blog'>
-      <span>{blog.title}</span>
+      <span>{blog.title} - {blog.author}</span>
       <div style={hideWhenVisible}>
         <button onClick={toggleVisibility}>view</button>
       </div>
@@ -22,7 +29,7 @@ const Blog = ({blog}) => {
         <button onClick={toggleVisibility}>hide</button>
         <p>{blog.url}</p>
         <p>{blog.likes}<button>like</button></p>
-        <p>{blog.author}</p>
+        <p>{addedby}</p>
       </div>
     </div>  
   )
