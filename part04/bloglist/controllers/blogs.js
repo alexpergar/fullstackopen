@@ -32,7 +32,7 @@ router.put('/:id', middleware.userExtractor, async(request, response, next) => {
   }
   
   const putBlog = await Blog.findByIdAndUpdate(request.params.id, request.body,
-    { new: true, runValidators: true, context:'query' })
+    { new: true, runValidators: true, context:'query', populate: {path: 'user'} })
   response.status(200).json(putBlog)
 })
 

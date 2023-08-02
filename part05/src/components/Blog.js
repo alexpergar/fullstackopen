@@ -22,12 +22,14 @@ const Blog = ({blog, blogs, setBlogs, notify}) => {
 
   const likeBlog = async () => {
     try {
+      console.log(blog)
       const likedBlog = await blogService.likeBlog(blog)
       let modBlogs = blogs.map(b => b.id === blog.id ? likedBlog : b)
       modBlogs.sort((a, b) => {
         if (a.likes > b.likes) return -1
         else return 1
       })
+      console.log(likedBlog)
       setBlogs(modBlogs)
     } catch(exception) {
       notify(exception.response.data.error, 'error')
