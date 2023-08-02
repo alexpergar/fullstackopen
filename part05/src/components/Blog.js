@@ -2,7 +2,7 @@ import { useState } from 'react'
 import blogService from '../services/blogs'
 import '../styles/index.css'
 
-const Blog = ({blog, blogs, setBlogs, notify}) => {
+const Blog = ({ blog, blogs, setBlogs, notify }) => {
 
   const [visible, setVisible] = useState(false)
 
@@ -22,14 +22,12 @@ const Blog = ({blog, blogs, setBlogs, notify}) => {
 
   const likeBlog = async () => {
     try {
-      console.log(blog)
       const likedBlog = await blogService.likeBlog(blog)
       let modBlogs = blogs.map(b => b.id === blog.id ? likedBlog : b)
       modBlogs.sort((a, b) => {
         if (a.likes > b.likes) return -1
         else return 1
       })
-      console.log(likedBlog)
       setBlogs(modBlogs)
     } catch(exception) {
       notify(exception.response.data.error, 'error')
@@ -61,7 +59,7 @@ const Blog = ({blog, blogs, setBlogs, notify}) => {
         <p>{addedby}</p>
         <button onClick={deleteBlog}>remove</button>
       </div>
-    </div>  
+    </div>
   )
 }
 

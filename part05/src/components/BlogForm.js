@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
+import PropTypes from 'prop-types'
 
-const BlogForm = ({blogs, setBlogs, notify, user}) => {
+const BlogForm = ({ blogs, setBlogs, notify, user }) => {
 
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
@@ -9,7 +10,7 @@ const BlogForm = ({blogs, setBlogs, notify, user}) => {
 
   const createBlog = async (event) => {
     event.preventDefault()
-  
+
     const likes = 0
     try {
       const newBlog = await blogService.createBlog({
@@ -27,34 +28,41 @@ const BlogForm = ({blogs, setBlogs, notify, user}) => {
   }
 
   return (
-  <form onSubmit={createBlog}>
-    <div>
-      title: <input
-        type='text'
-        value={title}
-        name='Title'
-        onChange={({ target }) => setTitle(target.value)}
-      />
-    </div>
-    <div>
-      author: <input
-        type='text'
-        value={author}
-        name='Author'
-        onChange={({ target }) => setAuthor(target.value)}
-      />
-    </div>
-    <div>
-      url: <input
-        type='text'
-        value={url}
-        name='Url'
-        onChange={({ target }) => setUrl(target.value)}
-      />
-    </div>
-    <button type='submit'>create</button>
-  </form>
+    <form onSubmit={createBlog}>
+      <div>
+        title: <input
+          type='text'
+          value={title}
+          name='Title'
+          onChange={({ target }) => setTitle(target.value)}
+        />
+      </div>
+      <div>
+        author: <input
+          type='text'
+          value={author}
+          name='Author'
+          onChange={({ target }) => setAuthor(target.value)}
+        />
+      </div>
+      <div>
+        url: <input
+          type='text'
+          value={url}
+          name='Url'
+          onChange={({ target }) => setUrl(target.value)}
+        />
+      </div>
+      <button type='submit'>create</button>
+    </form>
   )
 }
-  
+
+BlogForm.propTypes = {
+  blogs: PropTypes.array.isRequired,
+  setBlogs: PropTypes.func.isRequired,
+  notify: PropTypes.func.isRequired,
+  user: PropTypes.object.isRequired,
+}
+
 export default BlogForm

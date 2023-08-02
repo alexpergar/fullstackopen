@@ -1,6 +1,6 @@
 import '../styles/index.css'
 
-const Notification = ({ message, notificationClass}) => {
+const Notification = ({ message, notificationClass }) => {
   if (message === null) {
     return null
   }
