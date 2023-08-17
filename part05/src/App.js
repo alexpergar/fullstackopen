@@ -40,6 +40,35 @@ const App = () => {
     notify('You logged out', 'success')
   }
 
+  // Blog events
+  const likeBlog = async (blog) => {
+    try {
+      const likedBlog = await blogService.likeBlog(blog)
+      let modBlogs = blogs.map(b => b.id === blog.id ? likedBlog : b)
+      modBlogs.sort((a, b) => {
+        if (a.likes > b.likes) return -1
+        else if (a.likes < b.likes) return 1
+        else return a.title.localeCompare(b.title)
+      })
+      setBlogs(modBlogs)
+    } catch(exception) {
+      console.log(exception)
+      notify(exception.response.data.error, 'error')
+    }
+  }
+
+  const deleteBlog = async (blog) => {
+    if (!window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)){
+      return
+    }
+    try {
+      blogService.deleteBlog(blog)
+      setBlogs(blogs.filter(b => b.id !== blog.id))
+    } catch (exception) {
+      notify(exception.response.data.error, 'error')
+    }
+  }
+
   const notify = (message, style) => {
     setNotification(message)
     setNotificationClass(style)
@@ -51,7 +80,9 @@ const App = () => {
       .then(blogs => {
         blogs.sort((a, b) => {
           if (a.likes > b.likes) return -1
-          else return 1
+          else if (a.likes < b.likes) return 1
+          // If not, order alphabetially
+          else return a.title.localeCompare(b.title)
         })
         setBlogs( blogs )
       })
@@ -107,7 +138,7 @@ const App = () => {
       </Togglable>
       <h2>blogs</h2>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} blogs={blogs} setBlogs={setBlogs} notify={notify}/>
+        <Blog key={blog.id} blog={blog} likeBlog={likeBlog} deleteBlog={deleteBlog}/>
       )}
     </div>
   )
