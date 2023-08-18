@@ -69,6 +69,20 @@ const App = () => {
     }
   }
 
+  // Blog form
+  const createBlog = async ( title, author, url, likes ) => {
+    try {
+      const newBlog = await blogService.createBlog({
+        title, author, url, likes
+      })
+      newBlog.user = user
+      setBlogs(blogs.concat(newBlog))
+      notify(`a new blog ${newBlog.title} by ${newBlog.author} was added`, 'success')
+    } catch (exception) {
+      notify(exception.response.data.error, 'error')
+    }
+  }
+
   const notify = (message, style) => {
     setNotification(message)
     setNotificationClass(style)
@@ -134,7 +148,7 @@ const App = () => {
       <button onClick={logout}>logout</button>
       <Togglable buttonLabel='new blog'>
         <h2>create new blog</h2>
-        <BlogForm blogs={blogs} setBlogs={setBlogs} notify={notify} user={user}/>
+        <BlogForm createBlog={createBlog}/>
       </Togglable>
       <h2>blogs</h2>
       {blogs.map(blog =>

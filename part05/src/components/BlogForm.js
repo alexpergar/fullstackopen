@@ -1,39 +1,27 @@
 import { useState } from 'react'
-import blogService from '../services/blogs'
-import PropTypes from 'prop-types'
 
-const BlogForm = ({ blogs, setBlogs, notify, user }) => {
+const BlogForm = ({ createBlog }) => {
 
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
-  const createBlog = async (event) => {
+  const createBlogInternal = async (event) => {
     event.preventDefault()
-
-    const likes = 0
-    try {
-      const newBlog = await blogService.createBlog({
-        title, author, url, likes
-      })
-      newBlog.user = user
-      setBlogs(blogs.concat(newBlog))
-      setTitle('')
-      setAuthor('')
-      setUrl('')
-      notify(`a new blog ${newBlog.title} by ${newBlog.author} was added`, 'success')
-    } catch (exception) {
-      notify(exception.response.data.error, 'error')
-    }
+    createBlog(title, author, url, 0)
+    setTitle('')
+    setAuthor('')
+    setUrl('')
   }
 
   return (
-    <form onSubmit={createBlog}>
+    <form onSubmit={createBlogInternal}>
       <div>
         title: <input
           type='text'
           value={title}
           name='Title'
+          placeholder='Blog title'
           onChange={({ target }) => setTitle(target.value)}
         />
       </div>
@@ -42,6 +30,7 @@ const BlogForm = ({ blogs, setBlogs, notify, user }) => {
           type='text'
           value={author}
           name='Author'
+          placeholder='Blog author'
           onChange={({ target }) => setAuthor(target.value)}
         />
       </div>
@@ -50,19 +39,13 @@ const BlogForm = ({ blogs, setBlogs, notify, user }) => {
           type='text'
           value={url}
           name='Url'
+          placeholder='Blog URL'
           onChange={({ target }) => setUrl(target.value)}
         />
       </div>
       <button type='submit'>create</button>
     </form>
   )
-}
-
-BlogForm.propTypes = {
-  blogs: PropTypes.array.isRequired,
-  setBlogs: PropTypes.func.isRequired,
-  notify: PropTypes.func.isRequired,
-  user: PropTypes.object.isRequired,
 }
 
 export default BlogForm
