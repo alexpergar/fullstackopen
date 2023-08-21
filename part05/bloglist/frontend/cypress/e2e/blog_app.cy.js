@@ -32,4 +32,34 @@ describe('blog app', function() {
       cy.get('.error').should('exist')
     })
   })
+
+  describe('when logged in', function() {
+    beforeEach(function() {
+      cy.login({ username: 'testuser', password: '123abc' })
+    })
+
+    it('a blog can be created', function() {
+      cy.contains('new blog').click()
+      cy.get('#title-input').type('test title')
+      cy.get('#author-input').type('test author')
+      cy.get('#url-input').type('test url')
+      cy.get('#blog-button').click()
+      cy.contains('test title - test author')
+    })
+
+    it('users can like a blog', function() {
+      cy.createBlog({ title: 'test title', author: 'test author', url: 'test url', likes: 3 })
+      cy.contains('view').click()
+      cy.contains('like').click()
+      cy.contains('like').parent().should('contain', '4')
+    })
+
+    it('users can delete their blogs', function() {
+      cy.createBlog({ title: 'test title', author: 'test author', url: 'test url', likes: 3 })
+      cy.contains('view').click()
+      cy.contains('remove').click()
+      cy.contains('test title - test author').should('not.exist')
+    })
+  })
+
 })
