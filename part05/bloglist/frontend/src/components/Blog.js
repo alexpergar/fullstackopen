@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import '../styles/index.css'
 
-const Blog = ({ blog, likeBlog, deleteBlog }) => {
+const Blog = ({ blog, likeBlog, deleteBlog, isOwner }) => {
 
   const [visible, setVisible] = useState(false)
 
@@ -12,12 +12,14 @@ const Blog = ({ blog, likeBlog, deleteBlog }) => {
     setVisible(!visible)
   }
 
-  let addedby = ''
-  if (blog.user) {
-    addedby = blog.user.name
-  } else {
-    addedby = 'Unknown'
-  }
+  // In case no author is known
+  // if (blog.user.name === undefined) {
+  //   blog.user.name = 'Unknown'
+  // }
+
+  const removeButton = isOwner
+    ? (<button onClick={() => deleteBlog(blog)}>remove</button>)
+    : null
 
   return (
     <div className='blog'>
@@ -29,8 +31,8 @@ const Blog = ({ blog, likeBlog, deleteBlog }) => {
         <button onClick={toggleVisibility}>hide</button>
         <p>{blog.url}</p>
         <p>{blog.likes}<button onClick={() => likeBlog(blog)}>like</button></p>
-        <p>{addedby}</p>
-        <button onClick={() => deleteBlog(blog)}>remove</button>
+        <p>{blog.user.name}</p>
+        {removeButton}
       </div>
     </div>
   )

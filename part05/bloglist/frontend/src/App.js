@@ -153,8 +153,12 @@ const App = () => {
         <BlogForm createBlog={createBlog}/>
       </Togglable>
       <h2>blogs</h2>
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} likeBlog={likeBlog} deleteBlog={deleteBlog}/>
+      {blogs.map(blog => {
+        const isOwner = blog.user.username === user.username ? true : false
+        return <Blog
+          key={blog.id} blog={blog} likeBlog={likeBlog}
+          deleteBlog={deleteBlog} isOwner={isOwner} />
+      }
       )}
     </div>
   )
