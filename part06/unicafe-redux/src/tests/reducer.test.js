@@ -1,4 +1,5 @@
 import deepFreeze from 'deep-freeze'
+import { createStore } from 'redux'
 import counterReducer from '../reducers/reducer'
 
 describe('unicafe reducer', () => {
@@ -76,5 +77,26 @@ describe('unicafe reducer', () => {
       ok: 0,
       bad: 0
     })
+  })
+
+  test('store reducer is working', () => {
+    const store = createStore(counterReducer)
+
+    // Add buttons
+    store.dispatch({type: 'GOOD' })
+    store.dispatch({type: 'GOOD' })
+    store.dispatch({type: 'GOOD' })
+    store.dispatch({type: 'OK' })
+    store.dispatch({type: 'OK' })
+    store.dispatch({type: 'BAD' })
+    expect(store.getState()).toEqual({
+      good: 3,
+      ok: 2,
+      bad: 1,
+    })
+
+    // Reset button
+    store.dispatch({type: 'ZERO' })
+    expect(store.getState()).toEqual(initialState)
   })
 })
