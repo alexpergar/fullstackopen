@@ -4,16 +4,24 @@ import { setNotification, removeNotification } from "../reducers/notificationRed
 
 
 const AnecdoteList = () => {
+  const dispatch = useDispatch()
+
+  const sortByVotes = (a, b) => {
+    if (a.votes > b.votes) return -1
+    else if (a.votes < b.votes) return 1
+    else return a.content.localeCompare(b.content) // Sort alphabetically.
+  }
+  
   const anecdotes = useSelector(state =>
     state.filter === ''
       ? state.anecdotes
       : state.anecdotes.filter(a => a.content.includes(state.filter))
   )
-  const dispatch = useDispatch()
+  const anecdotesSorted = [ ...anecdotes ].sort(sortByVotes)
 
   const vote = (id) => {
     dispatch(voteAnecdote(id))
-    const anecdoteVoted = anecdotes.filter(a => a.id === id).pop()
+    const anecdoteVoted = anecdotesSorted.filter(a => a.id === id).pop()
     dispatch(setNotification(`you voted '${anecdoteVoted.content}'`))
     setTimeout(() => {
       dispatch(removeNotification())
@@ -22,7 +30,7 @@ const AnecdoteList = () => {
 
   return (
     <div>
-    {anecdotes.map(anecdote =>
+    {anecdotesSorted.map(anecdote =>
       <div key={anecdote.id}>
         <div>
           {anecdote.content}
