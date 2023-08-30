@@ -1,12 +1,27 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import AnecdoteForm from './components/AnecdoteForm'
 import Notification from './components/Notification'
-import { getAnecdotes } from './requests'
+import { getAnecdotes, voteAnecdote } from './requests'
+import { useNotifDispatch } from './Context'
+
 
 const App = () => {
+  const notifDispatch = useNotifDispatch()
+
+  const queryClient = useQueryClient()
+  const voteMutation = useMutation(voteAnecdote, {
+    onSuccess: (votedAnecdote) => {
+      const anecdotes = queryClient.getQueryData(['anecdotes'])
+      const anecdotesExceptVoted = anecdotes.filter(a => a.id !== votedAnecdote.id)
+      queryClient.setQueryData(['anecdotes'], anecdotesExceptVoted.concat(votedAnecdote))
+    }
+  })
 
   const handleVote = (anecdote) => {
-    console.log(anecdote);
+    voteMutation.mutate(anecdote)
+    notifDispatch({ type: 'SET_MESSAGE',
+                    payload: `You voted: "${anecdote.content}"`})
+    setTimeout(() => notifDispatch({ type: 'CLEAR_MESSAGE' }), 5000)
   }
 
   const result = useQuery({
@@ -20,7 +35,7 @@ const App = () => {
     return <div>loading data...</div>
   }
   else if (result.isError) {
-    return <div>anecdote service not available due to problems in the server</div>
+    return <div>Anecdote service not available due to problems in the server</div>
   }
 
   const anecdotes = result.data
