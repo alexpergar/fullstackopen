@@ -7,13 +7,12 @@ const AnecdoteForm = () => {
   const dispatch = useDispatch()
 
   const submitNewAnecdote = async (event) => {
-    console.log(event);
     event.preventDefault()
 
     const content = event.target.anecdote.value
     dispatch(createAnecdote(content))
     event.target.anecdote.value = ''
-    dispatch(createNotification(`you created the anecdote '${content}'`))
+    dispatch(createNotification(`you created the anecdote '${content}'`, 3))
   }
 
   return (

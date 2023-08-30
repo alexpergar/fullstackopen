@@ -16,12 +16,12 @@ const notificationSlice = createSlice({
 
 export const { notificationSet, notificationRemove } = notificationSlice.actions
 
-export const createNotification = (content) => {
+export const createNotification = (content, displayTime) => {
   return async dispatch => {
     dispatch(notificationSet(`you created the anecdote '${content}'`))
     setTimeout(() => {
       dispatch(notificationRemove())
-    }, 5000);
+    }, displayTime * 1000);
   }
 }
 
