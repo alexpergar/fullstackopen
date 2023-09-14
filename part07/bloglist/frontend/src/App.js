@@ -82,14 +82,17 @@ const App = () => {
       })
       newBlog.user = user
       setBlogs(blogs.concat(newBlog))
-      notify(`a new blog ${newBlog.title} by ${newBlog.author} was added`)
+      notify(
+        `a new blog ${newBlog.title} by ${newBlog.author} was added`,
+        'success'
+      )
     } catch (exception) {
       notify(exception.response.data.error)
     }
   }
 
-  const notify = (message) => {
-    dispatch(createNotification(message, 3))
+  const notify = (message, style) => {
+    dispatch(createNotification(message, style, 3))
   }
 
   useEffect(() => {

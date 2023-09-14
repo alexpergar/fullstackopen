@@ -4,11 +4,13 @@ import '../styles/index.css'
 const Notification = () => {
   const notification = useSelector((state) => state.notification)
 
-  if (notification === null) {
+  console.log(notification)
+
+  if (notification.message === '') {
     return null
   }
 
-  return <div>{notification}</div>
+  return <div className={notification.style}>{notification.message}</div>
 }
 
 export default Notification

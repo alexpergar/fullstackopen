@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-
 const notificationSlice = createSlice({
   name: 'notification',
   initialState: '',
@@ -10,18 +9,18 @@ const notificationSlice = createSlice({
     },
     notificationRemove(state, action) {
       return ''
-    }
-  }
+    },
+  },
 })
 
 export const { notificationSet, notificationRemove } = notificationSlice.actions
 
 export const createNotification = (content, displayTime) => {
-  return async dispatch => {
+  return async (dispatch) => {
     dispatch(notificationSet(`you created the anecdote '${content}'`))
     setTimeout(() => {
       dispatch(notificationRemove())
-    }, displayTime * 1000);
+    }, displayTime * 1000)
   }
 }
 
