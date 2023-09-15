@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
-import loginService from './services/login'
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
@@ -13,33 +12,28 @@ import {
   likeBlog,
   removeBlog,
 } from './reducers/blogReducer'
+import { getCachedUser, login, logout } from './reducers/userReducer'
 import { sortedBlogsSelector } from './utils/sorter'
 
 const App = () => {
-  // const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
 
   const dispatch = useDispatch()
 
   useEffect(() => {
     dispatch(initializeBlogs())
+    dispatch(getCachedUser())
   }, [])
 
   const blogs = useSelector(sortedBlogsSelector)
+  const user = useSelector((state) => state.user)
 
   const handleLogin = async (event) => {
     event.preventDefault()
 
     try {
-      const user = await loginService.login({
-        username,
-        password,
-      })
-      window.localStorage.setItem('loggedUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-      setUser(user)
+      await dispatch(login(username, password))
       setUsername('')
       setPassword('')
       notify('You logged in', 'success')
@@ -48,17 +42,15 @@ const App = () => {
     }
   }
 
-  const logout = () => {
-    window.localStorage.removeItem('loggedUser')
-    blogService.setToken(null)
-    setUser(null)
+  const handleLogout = async () => {
+    await dispatch(logout())
     notify('You logged out', 'success')
   }
 
   // Blog events
   const handleLike = async (blog) => {
     try {
-      dispatch(likeBlog(blog))
+      await dispatch(likeBlog(blog))
     } catch (exception) {
       notify(exception.response.data.error, 'error')
     }
@@ -100,15 +92,6 @@ const App = () => {
     dispatch(createNotification(message, style, 3))
   }
 
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedUser')
-    if (loggedUserJSON) {
-      const parsedUser = JSON.parse(loggedUserJSON)
-      setUser(parsedUser)
-      blogService.setToken(parsedUser.token)
-    }
-  }, [])
-
   if (user === null) {
     return (
       <div>
@@ -147,7 +130,7 @@ const App = () => {
     <div>
       <Notification />
       {user.username} logged in
-      <button onClick={logout}>logout</button>
+      <button onClick={handleLogout}>logout</button>
       <Togglable buttonLabel='new blog'>
         <h2>create new blog</h2>
         <BlogForm createBlog={handleCreateBlog} />
