@@ -14,11 +14,9 @@ import {
 } from './reducers/blogReducer'
 import { getCachedUser, login, logout } from './reducers/userReducer'
 import { sortedBlogsSelector } from './utils/sorter'
+import LoginForm from './components/LoginForm'
 
 const App = () => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -28,19 +26,6 @@ const App = () => {
 
   const blogs = useSelector(sortedBlogsSelector)
   const user = useSelector((state) => state.user)
-
-  const handleLogin = async (event) => {
-    event.preventDefault()
-
-    try {
-      await dispatch(login(username, password))
-      setUsername('')
-      setPassword('')
-      notify('You logged in', 'success')
-    } catch (exception) {
-      notify(exception.response.data.error, 'error')
-    }
-  }
 
   const handleLogout = async () => {
     await dispatch(logout())
@@ -96,32 +81,7 @@ const App = () => {
     return (
       <div>
         <Notification />
-        <h2>Log in to application</h2>
-        <form onSubmit={handleLogin}>
-          <div>
-            username
-            <input
-              id='username-input'
-              type='text'
-              value={username}
-              name='Username'
-              onChange={({ target }) => setUsername(target.value)}
-            />
-          </div>
-          <div>
-            password
-            <input
-              id='password-input'
-              type='password'
-              value={password}
-              name='Password'
-              onChange={({ target }) => setPassword(target.value)}
-            />
-          </div>
-          <button id='login-button' type='submit'>
-            login
-          </button>
-        </form>
+        <LoginForm />
       </div>
     )
   }
