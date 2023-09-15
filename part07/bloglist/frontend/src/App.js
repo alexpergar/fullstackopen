@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -7,14 +7,27 @@ import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import { createNotification } from './reducers/notificationReducer'
+import {
+  initializeBlogs,
+  createBlog,
+  likeBlog,
+  removeBlog,
+} from './reducers/blogReducer'
+import { sortedBlogsSelector } from './utils/sorter'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  // const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(initializeBlogs())
+  }, [])
+
+  const blogs = useSelector(sortedBlogsSelector)
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -43,45 +56,37 @@ const App = () => {
   }
 
   // Blog events
-  const likeBlog = async (blog) => {
+  const handleLike = async (blog) => {
     try {
-      const likedBlog = await blogService.likeBlog(blog)
-      let modBlogs = blogs.map((b) => (b.id === blog.id ? likedBlog : b))
-      modBlogs.sort((a, b) => {
-        if (a.likes > b.likes) return -1
-        else if (a.likes < b.likes) return 1
-        else return a.title.localeCompare(b.title)
-      })
-      setBlogs(modBlogs)
+      dispatch(likeBlog(blog))
     } catch (exception) {
-      console.log(exception)
       notify(exception.response.data.error, 'error')
     }
   }
 
-  const deleteBlog = async (blog) => {
+  const handleRemove = async (blog) => {
     if (!window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
       return
     }
     try {
-      blogService.deleteBlog(blog)
-      setBlogs(blogs.filter((b) => b.id !== blog.id))
+      dispatch(removeBlog(blog))
+      notify(`the blog ${blog.title} by ${blog.author} was deleted`, 'success')
     } catch (exception) {
       notify(exception.response.data.error, 'error')
     }
   }
 
   // Blog form
-  const createBlog = async (title, author, url, likes) => {
+  const handleCreateBlog = async (title, author, url, likes) => {
     try {
-      const newBlog = await blogService.createBlog({
+      const newBlog = {
         title,
         author,
         url,
         likes,
-      })
-      newBlog.user = user
-      setBlogs(blogs.concat(newBlog))
+        user: user,
+      }
+      dispatch(createBlog(newBlog))
       notify(
         `a new blog ${newBlog.title} by ${newBlog.author} was added`,
         'success'
@@ -94,18 +99,6 @@ const App = () => {
   const notify = (message, style) => {
     dispatch(createNotification(message, style, 3))
   }
-
-  useEffect(() => {
-    blogService.getAll().then((blogs) => {
-      blogs.sort((a, b) => {
-        if (a.likes > b.likes) return -1
-        else if (a.likes < b.likes) return 1
-        // If not, order alphabetially
-        else return a.title.localeCompare(b.title)
-      })
-      setBlogs(blogs)
-    })
-  }, [])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedUser')
@@ -157,7 +150,7 @@ const App = () => {
       <button onClick={logout}>logout</button>
       <Togglable buttonLabel='new blog'>
         <h2>create new blog</h2>
-        <BlogForm createBlog={createBlog} />
+        <BlogForm createBlog={handleCreateBlog} />
       </Togglable>
       <h2>blogs</h2>
       {blogs.map((blog) => {
@@ -166,8 +159,8 @@ const App = () => {
           <Blog
             key={blog.id}
             blog={blog}
-            likeBlog={likeBlog}
-            deleteBlog={deleteBlog}
+            likeBlog={handleLike}
+            deleteBlog={handleRemove}
             isOwner={isOwner}
           />
         )
