@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useMatch } from 'react-router-dom'
+import { Link, useMatch } from 'react-router-dom'
 import userService from '../services/users'
 
 const User = () => {
@@ -14,12 +14,23 @@ const User = () => {
   }, [])
 
   if (!user) {
-    return <div>Loading...</div>
+    return (
+      <div>
+        <Link to='/users'>go back</Link>
+        <p>Loading...</p>
+      </div>
+    )
   } else if (user.notFound) {
-    return <div>User not found</div>
+    return (
+      <div>
+        <Link to='/users'>go back</Link>
+        <h2>User not found</h2>
+      </div>
+    )
   } else {
     return (
       <div>
+        <Link to='/users'>go back</Link>
         <h2>{user.name}</h2>
         <h3>added blogs</h3>
         <ul>
