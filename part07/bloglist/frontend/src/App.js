@@ -1,13 +1,13 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Notification from './components/Notification'
-import BlogForm from './components/BlogForm'
-import Togglable from './components/Togglable'
 import { createNotification } from './reducers/notificationReducer'
 import { initializeBlogs } from './reducers/blogReducer'
 import { getCachedUser, logout } from './reducers/userReducer'
 import LoginForm from './components/LoginForm'
-import BlogList from './components/BlogList'
+import UsersPage from './components/UsersPage'
+import { Routes, Route, Link } from 'react-router-dom'
+import BlogsPage from './components/BlogsPage'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -38,10 +38,10 @@ const App = () => {
       <Notification />
       {user.username} logged in
       <button onClick={handleLogout}>logout</button>
-      <Togglable buttonLabel='new blog'>
-        <BlogForm />
-      </Togglable>
-      <BlogList />
+      <Routes>
+        <Route path='/users' element={<UsersPage />} />
+        <Route path='/blogs' element={<BlogsPage />} />
+      </Routes>
     </div>
   )
 }
