@@ -2,9 +2,10 @@ const router = require('express').Router()
 const middleware = require('../utils/middleware')
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const Comment = require('../models/comment')
 
 router.get('/', async (request, response) => {
-  const blogs = await Blog.find({}).populate('user')
+  const blogs = await Blog.find({}).populate('user').populate('comments')
   response.json(blogs)
 })
 
@@ -67,6 +68,26 @@ router.delete(
 
     await blog.deleteOne()
     response.status(204).end()
+  }
+)
+
+router.post(
+  '/:id/comments',
+  middleware.userExtractor,
+  async (request, response, next) => {
+    const blog = await Blog.findById(request.params.id)
+
+    // Save the comment
+    console.log(request.body)
+    let comment = new Comment({ ...request.body, blog: blog })
+    const savedComment = await comment.save()
+
+    // Save the comment ID on the blog
+    blog.comments = blog.comments.concat(savedComment._id)
+    await blog.save()
+
+    await savedComment.populate('blog')
+    response.status(201).json(savedComment)
   }
 )
 
