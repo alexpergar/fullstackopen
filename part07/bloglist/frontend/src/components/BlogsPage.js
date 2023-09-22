@@ -5,10 +5,10 @@ import BlogList from './BlogList'
 const BlogsPage = () => {
   return (
     <div>
-      <Togglable buttonLabel='new blog'>
+      <BlogList />
+      <Togglable buttonLabel='Click here to create a new blog'>
         <BlogForm />
       </Togglable>
-      <BlogList />
     </div>
   )
 }

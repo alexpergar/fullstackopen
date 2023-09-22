@@ -38,6 +38,9 @@ router.put(
         .json({ error: 'can only modify blogs you own' })
     }
 
+    // 'Unpack' the comments IDs so that mongoose can cast them
+    request.body.comments = request.body.comments.map((comment) => comment.id)
+
     const putBlog = await Blog.findByIdAndUpdate(
       request.params.id,
       request.body,
@@ -48,6 +51,7 @@ router.put(
         populate: { path: 'user' },
       }
     )
+
     response.status(200).json(putBlog)
   }
 )
@@ -78,7 +82,6 @@ router.post(
     const blog = await Blog.findById(request.params.id)
 
     // Save the comment
-    console.log(request.body)
     let comment = new Comment({ ...request.body, blog: blog })
     const savedComment = await comment.save()
 

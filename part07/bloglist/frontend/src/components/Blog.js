@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
-import '../styles/index.css'
-import { likeBlog, removeBlog, commentBlog } from '../reducers/blogReducer'
-import { Link, useMatch, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
+import { Link, useMatch, useNavigate } from 'react-router-dom'
+import { likeBlog, removeBlog, commentBlog } from '../reducers/blogReducer'
 import { createNotification } from '../reducers/notificationReducer'
 
 const BlogItem = () => {
@@ -26,7 +25,7 @@ const BlogItem = () => {
 
   const isOwner = blog && blog.user.username === loggedUser.username
   const removeButton = isOwner ? (
-    <button onClick={() => handleRemove(blog)}>remove</button>
+    <button onClick={() => handleRemove(blog)}>Delete</button>
   ) : null
 
   const handleLike = async (blog) => {
@@ -66,7 +65,7 @@ const BlogItem = () => {
   if (!blog) {
     return (
       <div>
-        <Link to='/blogs'>go back</Link>
+        <Link to='/blogs'>Go back</Link>
         <p>Loading...</p>
       </div>
     )
@@ -75,7 +74,7 @@ const BlogItem = () => {
   if (blog.notFound) {
     return (
       <div>
-        <Link to='/blogs'>go back</Link>
+        <Link to='/blogs'>Go back</Link>
         <h2>Blog not found</h2>
       </div>
     )
@@ -83,32 +82,36 @@ const BlogItem = () => {
 
   return (
     <div>
-      <Link to='/blogs'>go back</Link>
+      <Link to='/blogs'>Go back</Link>
       <h2>
         {blog.title} - {blog.author}
       </h2>
       <div>
-        <p>{blog.url}</p>
         <p>
-          {blog.likes}
-          <button onClick={() => handleLike(blog)}>like</button>
+          URL: <a>{blog.url}</a>
         </p>
-        <p>added by {blog.user.name}</p>
+        <p>
+          Number of likes: <b>{blog.likes}</b>
+          <button onClick={() => handleLike(blog)}>Click to like</button>
+        </p>
+        <p>
+          Blog added by: <b>{blog.user.name}</b>
+        </p>
         {removeButton}
       </div>
 
       <form onSubmit={handleCreateComment}>
-        <h3>comments</h3>
-        <div>
+        <h3>Comments</h3>
+        <span>
           <input
             id='comment'
             type='text'
             name='Comment'
             placeholder='Write your comment...'
           />
-        </div>
+        </span>
         <button id='blog-button' type='submit'>
-          add comment
+          Add comment
         </button>
       </form>
 

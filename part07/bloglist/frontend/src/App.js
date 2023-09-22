@@ -1,16 +1,17 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import { getCachedUser } from './reducers/userReducer'
+import { initializeBlogs } from './reducers/blogReducer'
 import Notification from './components/Notification'
-import { createNotification } from './reducers/notificationReducer'
-import { getCachedUser, logout } from './reducers/userReducer'
 import LoginForm from './components/LoginForm'
 import UsersPage from './components/UsersPage'
-import { Routes, Route } from 'react-router-dom'
 import BlogsPage from './components/BlogsPage'
 import User from './components/User'
-import { initializeBlogs } from './reducers/blogReducer'
 import BlogItem from './components/Blog'
 import NavMenu from './components/NavMenu'
+import { PageBody } from './styled/App.styles'
+import GlobalStyle from './styled/globalStyles'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -22,32 +23,29 @@ const App = () => {
 
   const loggedUser = useSelector((state) => state.user)
 
-  const handleLogout = async () => {
-    dispatch(logout())
-    dispatch(createNotification('You logged out', 'success', 3))
-  }
-
   if (loggedUser === null) {
     return (
-      <div>
+      <PageBody>
         <Notification />
         <LoginForm />
-      </div>
+      </PageBody>
     )
   }
 
   return (
     <div>
+      <GlobalStyle />
       <Notification />
-      {loggedUser.username} logged in
-      <button onClick={handleLogout}>logout</button>
       <NavMenu />
-      <Routes>
-        <Route path='/users' element={<UsersPage />} />
-        <Route path='/blogs' element={<BlogsPage />} />
-        <Route path='/users/:id' element={<User />} />
-        <Route path='/blogs/:id' element={<BlogItem />} />
-      </Routes>
+      <PageBody>
+        <Routes>
+          <Route path='/' element={<Navigate replace to='/blogs' />} />
+          <Route path='/users' element={<UsersPage />} />
+          <Route path='/blogs' element={<BlogsPage />} />
+          <Route path='/users/:id' element={<User />} />
+          <Route path='/blogs/:id' element={<BlogItem />} />
+        </Routes>
+      </PageBody>
     </div>
   )
 }

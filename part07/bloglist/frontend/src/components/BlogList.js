@@ -1,22 +1,24 @@
 import { useSelector } from 'react-redux'
 import { sortedBlogsSelector } from '../utils/sorter'
-import { Link } from 'react-router-dom'
+import { StyledLink } from '../styled/common.styles'
 
 const BlogList = () => {
   const blogs = useSelector(sortedBlogsSelector)
 
   return (
     <div>
-      <h2>blogs</h2>
-      {blogs.map((blog) => {
-        return (
-          <div key={blog.id}>
-            <Link to={`/blogs/${blog.id}`}>
-              <b>{blog.title}</b> by {blog.author}
-            </Link>
-          </div>
-        )
-      })}
+      <h2>Blogs</h2>
+      <ul>
+        {blogs.map((blog) => {
+          return (
+            <li key={blog.id}>
+              <StyledLink to={`/blogs/${blog.id}`}>
+                <b>{blog.title}</b> by <i>{blog.author}</i>
+              </StyledLink>
+            </li>
+          )
+        })}
+      </ul>
     </div>
   )
 }

@@ -4,8 +4,6 @@ import '../styles/index.css'
 const Notification = () => {
   const notification = useSelector((state) => state.notification)
 
-  console.log(notification)
-
   if (notification.message === '') {
     return null
   }

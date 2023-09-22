@@ -17,7 +17,7 @@ const LoginForm = () => {
       <h2>Log in to application</h2>
       <form onSubmit={handleLogin}>
         <div>
-          username
+          Username:
           <input
             id='username-input'
             type='text'
@@ -27,7 +27,7 @@ const LoginForm = () => {
           />
         </div>
         <div>
-          password
+          Password:
           <input
             id='password-input'
             type='password'

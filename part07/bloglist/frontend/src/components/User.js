@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Link, useMatch } from 'react-router-dom'
+import { useMatch } from 'react-router-dom'
 import userService from '../services/users'
+import { StyledLink } from '../styled/common.styles'
 
 const User = () => {
   const [user, setUser] = useState(null)
@@ -16,28 +17,30 @@ const User = () => {
   if (!user) {
     return (
       <div>
-        <Link to='/users'>go back</Link>
+        <StyledLink to='/users'>go back</StyledLink>
         <p>Loading...</p>
       </div>
     )
   } else if (user.notFound) {
     return (
       <div>
-        <Link to='/users'>go back</Link>
+        <StyledLink to='/users'>go back</StyledLink>
         <h2>User not found</h2>
       </div>
     )
   } else {
     return (
       <div>
-        <Link to='/users'>go back</Link>
+        <StyledLink to='/users'>Go back</StyledLink>
         <h2>{user.name}</h2>
-        <h3>added blogs</h3>
+        <h3>Added blogs</h3>
         <ul>
           {user.blogs.map((blog) => {
             return (
               <li key={blog.id}>
-                <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+                <StyledLink to={`/blogs/${blog.id}`}>
+                  <b>{blog.title}</b>
+                </StyledLink>
               </li>
             )
           })}

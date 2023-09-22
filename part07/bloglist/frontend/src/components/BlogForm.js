@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { createBlog } from '../reducers/blogReducer'
+import { VPadDiv } from '../styled/BlogForm.styles'
 
 const BlogForm = () => {
   const dispatch = useDispatch()
@@ -25,9 +26,9 @@ const BlogForm = () => {
 
   return (
     <form onSubmit={handleCreateBlog}>
-      <h2>create new blog</h2>
-      <div>
-        title:{' '}
+      <h2>New blog</h2>
+      <VPadDiv>
+        Title:{' '}
         <input
           id='title-input'
           type='text'
@@ -36,9 +37,9 @@ const BlogForm = () => {
           placeholder='Blog title'
           onChange={({ target }) => setTitle(target.value)}
         />
-      </div>
-      <div>
-        author:{' '}
+      </VPadDiv>
+      <VPadDiv>
+        Author:{' '}
         <input
           id='author-input'
           type='text'
@@ -47,9 +48,9 @@ const BlogForm = () => {
           placeholder='Blog author'
           onChange={({ target }) => setAuthor(target.value)}
         />
-      </div>
-      <div>
-        url:{' '}
+      </VPadDiv>
+      <VPadDiv>
+        URL:{' '}
         <input
           id='url-input'
           type='text'
@@ -58,9 +59,9 @@ const BlogForm = () => {
           placeholder='Blog URL'
           onChange={({ target }) => setUrl(target.value)}
         />
-      </div>
+      </VPadDiv>
       <button id='blog-button' type='submit'>
-        create
+        Create
       </button>
     </form>
   )

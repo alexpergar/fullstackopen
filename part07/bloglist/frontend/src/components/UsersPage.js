@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
 import userService from '../services/users'
-import { Link } from 'react-router-dom'
+import { StyledLink } from '../styled/common.styles'
 
 const UsersPage = () => {
   const [users, setUsers] = useState([])
 
   useEffect(() => {
     userService.getAll().then((result) => setUsers(result))
-    console.log(users)
   }, [])
 
   return (
@@ -25,7 +24,9 @@ const UsersPage = () => {
             return (
               <tr key={u.id}>
                 <td>
-                  <Link to={`/users/${u.id}`}>{u.name}</Link>
+                  <StyledLink to={`/users/${u.id}`}>
+                    <b>{u.name}</b>
+                  </StyledLink>
                 </td>
                 <td>{u.blogs.length}</td>
               </tr>
