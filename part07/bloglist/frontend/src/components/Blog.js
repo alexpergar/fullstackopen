@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import '../styles/index.css'
-import { likeBlog, removeBlog } from '../reducers/blogReducer'
+import { likeBlog, removeBlog, commentBlog } from '../reducers/blogReducer'
 import { Link, useMatch, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { createNotification } from '../reducers/notificationReducer'
@@ -56,6 +56,13 @@ const BlogItem = () => {
     }
   }
 
+  const handleCreateComment = async (event) => {
+    event.preventDefault()
+    const comment = event.target.comment.value
+    dispatch(commentBlog(blog, comment))
+    event.target.comment.value = ''
+  }
+
   if (!blog) {
     return (
       <div>
@@ -89,6 +96,27 @@ const BlogItem = () => {
         <p>added by {blog.user.name}</p>
         {removeButton}
       </div>
+
+      <form onSubmit={handleCreateComment}>
+        <h3>comments</h3>
+        <div>
+          <input
+            id='comment'
+            type='text'
+            name='Comment'
+            placeholder='Write your comment...'
+          />
+        </div>
+        <button id='blog-button' type='submit'>
+          add comment
+        </button>
+      </form>
+
+      <ul>
+        {blog.comments.map((comment) => {
+          return <li key={comment.id}>{comment.content}</li>
+        })}
+      </ul>
     </div>
   )
 }
