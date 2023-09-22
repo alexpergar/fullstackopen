@@ -10,6 +10,7 @@ import BlogsPage from './components/BlogsPage'
 import User from './components/User'
 import { initializeBlogs } from './reducers/blogReducer'
 import BlogItem from './components/Blog'
+import NavMenu from './components/NavMenu'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -40,6 +41,7 @@ const App = () => {
       <Notification />
       {loggedUser.username} logged in
       <button onClick={handleLogout}>logout</button>
+      <NavMenu />
       <Routes>
         <Route path='/users' element={<UsersPage />} />
         <Route path='/blogs' element={<BlogsPage />} />
